@@ -1,5 +1,5 @@
 import 'package:andreaproject/core/theme/theme.dart';
-import 'package:andreaproject/features/auth/presentation/pages/signup_page.dart';
+import 'package:andreaproject/features/auth/presentation/pages/login_page.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
       title: 'Blog App',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.dartThemeMode,
-      home: SignupPage(),
+      home: LoginPage(),
     );
   }
 }
