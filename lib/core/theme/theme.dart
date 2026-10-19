@@ -15,6 +15,8 @@ class AppTheme {
       contentPadding: EdgeInsets.all(27),
       enabledBorder: _border(),
       focusedBorder: _border(AppPallete.gradient2),
+      errorBorder: _border(AppPallete.errorColor),
+      border: _border(),
     ),
     chipTheme: ChipThemeData(
       color: MaterialStatePropertyAll(AppPallete.backgroundColor),
