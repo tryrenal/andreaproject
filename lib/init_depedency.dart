@@ -1,7 +1,9 @@
+import 'package:andreaproject/core/common/cubits/app_user/app_user_cubit.dart';
 import 'package:andreaproject/core/secrets/app_secrets.dart';
 import 'package:andreaproject/features/auth/data/data_sources/auth_remote_data_source.dart';
 import 'package:andreaproject/features/auth/data/repository/auth_repository_impl.dart';
 import 'package:andreaproject/features/auth/domain/repository/auth_repository.dart';
+import 'package:andreaproject/features/auth/domain/usecases/current_user.dart';
 import 'package:andreaproject/features/auth/domain/usecases/user_login.dart';
 import 'package:andreaproject/features/auth/domain/usecases/user_sign_up.dart';
 import 'package:andreaproject/features/auth/presentation/bloc/auth_bloc.dart';
@@ -18,6 +20,9 @@ Future<void> initDepedencies() async {
   );
 
   serviceLocator.registerLazySingleton(() => supaBase.client);
+
+  //core
+  serviceLocator.registerLazySingleton(() => AppUserCubit());
 }
 
 void _initAuth() {
@@ -30,8 +35,14 @@ void _initAuth() {
   );
   serviceLocator.registerFactory(() => UserSignUp(serviceLocator()));
   serviceLocator.registerFactory(() => UserLogin(serviceLocator()));
+  serviceLocator.registerFactory(() => CurrentUser(serviceLocator()));
 
   serviceLocator.registerLazySingleton(
-    () => AuthBloc(userSignUp: serviceLocator(), userLogin: serviceLocator()),
+    () => AuthBloc(
+      userSignUp: serviceLocator(),
+      userLogin: serviceLocator(),
+      currentUser: serviceLocator(),
+      appUserCubit: serviceLocator(),
+    ),
   );
 }

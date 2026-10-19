@@ -1,5 +1,5 @@
 import 'package:andreaproject/core/error/failures.dart';
-import 'package:andreaproject/features/auth/domain/entities/user.dart';
+import 'package:andreaproject/core/common/entities/user.dart';
 import 'package:fpdart/fpdart.dart';
 
 abstract interface class AuthRepository {
@@ -13,4 +13,6 @@ abstract interface class AuthRepository {
     required String email,
     required String password,
   });
+
+  Future<Either<Failures, User>> currentUser();
 }

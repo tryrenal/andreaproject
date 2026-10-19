@@ -1,6 +1,6 @@
 import 'package:andreaproject/core/error/failures.dart';
 import 'package:andreaproject/core/usecase/usecase.dart';
-import 'package:andreaproject/features/auth/domain/entities/user.dart';
+import 'package:andreaproject/core/common/entities/user.dart';
 import 'package:andreaproject/features/auth/domain/repository/auth_repository.dart';
 import 'package:fpdart/fpdart.dart';
 
