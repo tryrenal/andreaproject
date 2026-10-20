@@ -39,7 +39,12 @@ class BlogRemoteDataSourceImpl implements BlogRemoteDataSource {
   }) async {
     try {
       await supabaseClient.storage.from('blog_images').upload(blog.id, image);
-      return supabaseClient.storage.from('blog_images').getPublicUrl(blog.id);
+      final res = supabaseClient.storage
+          .from('blog_images')
+          .getPublicUrl(blog.id);
+      return res;
+    } on StorageException catch (e) {
+      throw ServerException(e.message);
     } catch (e) {
       throw ServerException(e.toString());
     }
