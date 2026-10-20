@@ -8,6 +8,7 @@ import 'package:andreaproject/features/auth/domain/usecases/current_user.dart';
 import 'package:andreaproject/features/auth/domain/usecases/user_login.dart';
 import 'package:andreaproject/features/auth/domain/usecases/user_sign_up.dart';
 import 'package:andreaproject/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:andreaproject/features/blog/data/data_sources/blog_local_data_source.dart';
 import 'package:andreaproject/features/blog/data/data_sources/blog_remote_data_source.dart';
 import 'package:andreaproject/features/blog/data/repository/blog_repository_impl.dart';
 import 'package:andreaproject/features/blog/domain/repository/blog_repository.dart';
@@ -15,7 +16,9 @@ import 'package:andreaproject/features/blog/domain/usecases/get_all_blogs.dart';
 import 'package:andreaproject/features/blog/domain/usecases/upload_blog.dart';
 import 'package:andreaproject/features/blog/presentation/bloc/blog_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:hive/hive.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 final serviceLocator = GetIt.instance;
@@ -28,7 +31,10 @@ Future<void> initDepedencies() async {
     publishableKey: AppSecrets.supaBasePublishedKey,
   );
 
+  Hive.defaultDirectory = (await getApplicationDocumentsDirectory()).path;
+
   serviceLocator.registerLazySingleton(() => supaBase.client);
+  serviceLocator.registerLazySingleton(() => Hive.box(name: 'blogs'));
 
   //core
   serviceLocator.registerFactory(() => InternetConnection());
@@ -43,8 +49,15 @@ void _initBlog() {
     ..registerFactory<BlogRemoteDataSource>(
       () => BlogRemoteDataSourceImpl(serviceLocator()),
     )
+    ..registerFactory<BlogLocalDataSource>(
+      () => BlogLocalDataSourceImpl(serviceLocator()),
+    )
     ..registerFactory<BlogRepository>(
-      () => BlogRepositoryImpl(serviceLocator()),
+      () => BlogRepositoryImpl(
+        serviceLocator(),
+        serviceLocator(),
+        serviceLocator(),
+      ),
     )
     ..registerFactory(() => UploadBlog(serviceLocator()))
     ..registerFactory(() => GetAllBlogs(serviceLocator()))
