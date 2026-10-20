@@ -10,6 +10,7 @@ import 'package:andreaproject/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:andreaproject/features/blog/data/data_sources/blog_remote_data_source.dart';
 import 'package:andreaproject/features/blog/data/repository/blog_repository_impl.dart';
 import 'package:andreaproject/features/blog/domain/repository/blog_repository.dart';
+import 'package:andreaproject/features/blog/domain/usecases/get_all_blogs.dart';
 import 'package:andreaproject/features/blog/domain/usecases/upload_blog.dart';
 import 'package:andreaproject/features/blog/presentation/bloc/blog_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -40,7 +41,11 @@ void _initBlog() {
       () => BlogRepositoryImpl(serviceLocator()),
     )
     ..registerFactory(() => UploadBlog(serviceLocator()))
-    ..registerLazySingleton(() => BlogBloc(uploadBlog: serviceLocator()));
+    ..registerFactory(() => GetAllBlogs(serviceLocator()))
+    ..registerLazySingleton(
+      () =>
+          BlogBloc(uploadBlog: serviceLocator(), getAllBlogs: serviceLocator()),
+    );
 }
 
 void _initAuth() {
