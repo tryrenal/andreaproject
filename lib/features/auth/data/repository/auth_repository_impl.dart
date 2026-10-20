@@ -1,3 +1,4 @@
+import 'package:andreaproject/core/constant/constant.dart';
 import 'package:andreaproject/core/error/exception.dart';
 import 'package:andreaproject/core/error/failures.dart';
 import 'package:andreaproject/core/network/connection_checker.dart';
@@ -44,7 +45,7 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Either<Failures, User>> _getUser(Future<User> Function() fn) async {
     try {
       if (!await (connectionChecker.isConnected)) {
-        return left(Failures('No Internet'));
+        return left(Failures(Constant.noConnectionError));
       }
       final user = await fn();
 

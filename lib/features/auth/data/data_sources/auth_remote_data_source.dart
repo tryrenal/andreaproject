@@ -40,10 +40,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       if (response.user == null) {
         throw ServerException('User is null');
       }
-      print(response.user.toString());
       return UserModel.fromJson(response.user!.toJson());
+    } on AuthException catch (e) {
+      throw ServerException(e.toString());
     } catch (e) {
-      print(e.toString());
       throw ServerException(e.toString());
     }
   }
@@ -63,10 +63,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       if (response.user == null) {
         throw ServerException('User is null');
       }
-      print(response.user.toString());
       return UserModel.fromJson(response.user!.toJson());
+    } on AuthException catch (e) {
+      throw ServerException(e.toString());
     } catch (e) {
-      print(e.toString());
       throw ServerException(e.toString());
     }
   }
@@ -80,14 +80,12 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
             .select()
             .eq('id', currentUserSession!.user.id);
 
-        print(userData.toString());
         return UserModel.fromJson(
           userData.first,
         ).copyWith(email: currentUserSession!.user.email);
       }
       return null;
     } catch (e) {
-      print(e.toString());
       throw ServerException(e.toString());
     }
   }

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:andreaproject/core/constant/constant.dart';
 import 'package:andreaproject/core/error/exception.dart';
 import 'package:andreaproject/core/error/failures.dart';
 import 'package:andreaproject/core/network/connection_checker.dart';
@@ -32,7 +33,7 @@ class BlogRepositoryImpl implements BlogRepository {
   }) async {
     try {
       if (!await (connectionChecker.isConnected)) {
-        return left(Failures('no internet'));
+        return left(Failures(Constant.noConnectionError));
       }
 
       BlogModel blogModel = BlogModel(
