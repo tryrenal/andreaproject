@@ -12,7 +12,6 @@ class UserRepository {
     if (response.statusCode == 200) {
       return User.fromJson(response.body);
     }
-
-    throw Exception('some error occured');
+    throw Exception('Some Error Occurred');
   }
 }
