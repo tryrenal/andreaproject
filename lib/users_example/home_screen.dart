@@ -12,7 +12,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final UserRepository userRepository = UserRepository();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
