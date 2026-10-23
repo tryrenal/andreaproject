@@ -1,3 +1,4 @@
+import 'package:andreaproject/animation_example/animation_screen.dart';
 import 'package:andreaproject/counter_app/home_page.dart';
 import 'package:andreaproject/users_example/home_screen.dart';
 import 'package:andreaproject/users_example/user_repository.dart';
@@ -18,10 +19,16 @@ class MyApp extends StatelessWidget {
     //   home: const MyHomePage(title: 'Counter App'),
     // );
 
+    // return MaterialApp(
+    //   title: 'Users Example',
+    //   theme: ThemeData(primarySwatch: Colors.blue),
+    //   home: HomeScreen(futureUsers: UserRepository().fetchUsers()),
+    // );
+
     return MaterialApp(
-      title: 'Users Example',
+      title: 'Flutter Demo',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: HomeScreen(futureUsers: UserRepository().fetchUsers()),
+      home: const AnimationScreen(),
     );
   }
 }
