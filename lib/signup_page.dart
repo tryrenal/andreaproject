@@ -1,4 +1,5 @@
 import 'package:andreaproject/login_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -19,6 +20,19 @@ class _SignUpPageState extends State<SignUpPage> {
     emailController.dispose();
     passwordController.dispose();
     super.dispose();
+  }
+
+  Future<void> createUserWithEmailPassword() async {
+    try {
+      final userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+            email: emailController.text.trim(),
+            password: passwordController.text.trim(),
+          );
+      print('userCred = $userCredential');
+    } on FirebaseAuthException catch (e) {
+      print(e.message);
+    }
   }
 
   @override
@@ -49,7 +63,9 @@ class _SignUpPageState extends State<SignUpPage> {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () async {
+                  await createUserWithEmailPassword();
+                },
                 child: const Text(
                   'SIGN UP',
                   style: TextStyle(fontSize: 16, color: Colors.white),
