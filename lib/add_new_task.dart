@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:andreaproject/utils.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -22,6 +24,21 @@ class _AddNewTaskState extends State<AddNewTask> {
     titleController.dispose();
     descriptionController.dispose();
     super.dispose();
+  }
+
+  Future<void> uploadTaskToDb() async {
+    try {
+      final data = await FirebaseFirestore.instance.collection("tasks").add({
+        "title": titleController.text.trim(),
+        "description": descriptionController.text.trim(),
+        "postedAt": FieldValue.serverTimestamp(),
+        "date": selectedDate,
+        "color": rgbToHex(_selectedColor),
+      });
+      print(data);
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override
@@ -111,7 +128,9 @@ class _AddNewTaskState extends State<AddNewTask> {
               ),
               const SizedBox(height: 10),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () async {
+                  await uploadTaskToDb();
+                },
                 child: const Text(
                   'SUBMIT',
                   style: TextStyle(fontSize: 16, color: Colors.white),
