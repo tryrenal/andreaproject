@@ -1,9 +1,11 @@
 import 'dart:io';
 import 'package:andreaproject/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:uuid/uuid.dart';
 
 class AddNewTask extends StatefulWidget {
   const AddNewTask({super.key});
@@ -28,14 +30,15 @@ class _AddNewTaskState extends State<AddNewTask> {
 
   Future<void> uploadTaskToDb() async {
     try {
-      final data = await FirebaseFirestore.instance.collection("tasks").add({
+      final id = const Uuid().v4();
+      await FirebaseFirestore.instance.collection("tasks").doc(id).set({
         "title": titleController.text.trim(),
         "description": descriptionController.text.trim(),
         "postedAt": FieldValue.serverTimestamp(),
         "date": selectedDate,
         "color": rgbToHex(_selectedColor),
+        "created": FirebaseAuth.instance.currentUser!.uid,
       });
-      print(data);
     } catch (e) {
       print(e);
     }
