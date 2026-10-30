@@ -1,9 +1,11 @@
 import 'package:andreaproject/core/theme/app_pallete.dart';
 import 'package:andreaproject/features/auth/presentation/models/onboarding_ui_model.dart';
 import 'package:andreaproject/features/auth/presentation/widgets/onboarding_caraousel.dart';
+import 'package:andreaproject/features/home/presentation/home_page.dart';
 import 'package:flutter/material.dart';
 
 class OnboardingPage extends StatefulWidget {
+  static route() => MaterialPageRoute(builder: (context) => OnboardingPage());
   const OnboardingPage({super.key});
 
   @override
@@ -77,7 +79,13 @@ class _OnboardingPageState extends State<OnboardingPage> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppPallete.whiteColor,
                           ),
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              HomePage.route(),
+                              (route) => false,
+                            );
+                          },
                           child: Text(
                             'Get Started',
                             style: TextStyle(
