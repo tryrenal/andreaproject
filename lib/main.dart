@@ -1,3 +1,4 @@
+import 'package:andreaproject/custom_nav_page.dart';
 import 'package:andreaproject/feed_page.dart';
 import 'package:andreaproject/home_page.dart';
 import 'package:andreaproject/persistent_bottom_nav.dart';
@@ -14,6 +15,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: PersistentBottomNav());
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(scaffoldBackgroundColor: Colors.red),
+      home: CustomNavPage(),
+    );
   }
 }
