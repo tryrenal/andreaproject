@@ -1,4 +1,5 @@
 import 'package:andreaproject/dashboard.dart';
+import 'package:andreaproject/error_page.dart';
 import 'package:andreaproject/login.dart';
 import 'package:andreaproject/message.dart';
 import 'package:andreaproject/profile.dart';
@@ -25,9 +26,10 @@ class MyApp extends StatelessWidget {
   }
 
   final GoRouter _router = GoRouter(
+    errorBuilder: (contxt, state) => ErrorPage(),
     redirect: (context, state) {
       if (isLoggedIn) {
-        return '/dashboard';
+        return '/error';
       } else {
         return '/';
       }
