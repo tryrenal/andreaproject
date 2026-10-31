@@ -20,12 +20,22 @@ final GoRouter router = GoRouter(
   routes: [
     GoRoute(
       path: AppRouters.onBoarding,
-      builder: (context, state) => OnboardingPage(),
+      builder: (context, state) => const OnboardingPage(),
     ),
 
     StatefulShellRoute.indexedStack(
-      builder: (context, state, navigatorShell) {
-        return HomePage(navigationShell: navigatorShell);
+      pageBuilder: (context, state, navigationShell) {
+        return CustomTransitionPage(
+          key: state.pageKey,
+          transitionDuration: const Duration(milliseconds: 800),
+          child: HomePage(navigationShell: navigationShell),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            final fadeAnimation = CurveTween(
+              curve: Curves.easeInOutCubic,
+            ).animate(animation);
+            return FadeTransition(opacity: fadeAnimation, child: child);
+          },
+        );
       },
       branches: <StatefulShellBranch>[
         StatefulShellBranch(
@@ -33,7 +43,7 @@ final GoRouter router = GoRouter(
           routes: [
             GoRoute(
               path: AppRouters.feed,
-              builder: (context, state) => FeedPage(),
+              builder: (context, state) => const FeedPage(),
             ),
           ],
         ),
@@ -42,7 +52,7 @@ final GoRouter router = GoRouter(
           routes: [
             GoRoute(
               path: AppRouters.message,
-              builder: (context, state) => MessagePage(),
+              builder: (context, state) => const MessagePage(),
             ),
           ],
         ),
@@ -51,7 +61,7 @@ final GoRouter router = GoRouter(
           routes: [
             GoRoute(
               path: AppRouters.cart,
-              builder: (context, state) => CartPage(),
+              builder: (context, state) => const CartPage(),
             ),
           ],
         ),
@@ -60,7 +70,7 @@ final GoRouter router = GoRouter(
           routes: [
             GoRoute(
               path: AppRouters.profile,
-              builder: (context, state) => ProfilePage(),
+              builder: (context, state) => const ProfilePage(),
             ),
           ],
         ),
