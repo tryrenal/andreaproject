@@ -1,3 +1,4 @@
+import 'package:andreaproject/main.dart';
 import 'package:andreaproject/route_names.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -15,6 +16,7 @@ class Login extends StatelessWidget {
             Text('Login'),
             ElevatedButton(
               onPressed: () {
+                isLoggedIn = true;
                 context.goNamed(RouteNames.dashboard);
               },
               child: Text('Go To Dashboard'),

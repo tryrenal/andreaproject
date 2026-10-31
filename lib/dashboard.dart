@@ -18,6 +18,7 @@ class Dashboard extends StatelessWidget {
                 // GoRouter.of(context).go('/profile/renal');
                 String title = "renal";
                 // context.go('/profile/$title');
+                //go is transisi without stacking
                 context.goNamed(
                   RouteNames.profile,
                   pathParameters: {'name': title},
@@ -28,7 +29,7 @@ class Dashboard extends StatelessWidget {
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                context.goNamed(
+                context.pushNamed(
                   RouteNames.message,
                   queryParameters: {'name': 'Sabdo'},
                 );

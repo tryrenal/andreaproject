@@ -11,7 +11,7 @@ void main() {
   runApp(MyApp());
 }
 
-final isLoggedIn = true;
+bool isLoggedIn = false;
 
 class MyApp extends StatelessWidget {
   MyApp({super.key});
@@ -28,11 +28,13 @@ class MyApp extends StatelessWidget {
   final GoRouter _router = GoRouter(
     errorBuilder: (contxt, state) => ErrorPage(),
     redirect: (context, state) {
-      if (isLoggedIn) {
-        return '/error';
-      } else {
+      final isOnLoginPage = state.matchedLocation == '/';
+
+      if (!isLoggedIn && !isOnLoginPage) {
         return '/';
       }
+
+      return null;
     },
     routes: [
       GoRoute(
