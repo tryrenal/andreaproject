@@ -1,4 +1,5 @@
 import 'package:andreaproject/dashboard.dart';
+import 'package:andreaproject/login.dart';
 import 'package:andreaproject/message.dart';
 import 'package:andreaproject/profile.dart';
 import 'package:andreaproject/route_names.dart';
@@ -8,6 +9,8 @@ import 'package:go_router/go_router.dart';
 void main() {
   runApp(MyApp());
 }
+
+final isLoggedIn = true;
 
 class MyApp extends StatelessWidget {
   MyApp({super.key});
@@ -22,10 +25,22 @@ class MyApp extends StatelessWidget {
   }
 
   final GoRouter _router = GoRouter(
+    redirect: (context, state) {
+      if (isLoggedIn) {
+        return '/dashboard';
+      } else {
+        return '/';
+      }
+    },
     routes: [
       GoRoute(
+        path: '/',
+        builder: (context, state) => Login(),
+        name: RouteNames.login,
+      ),
+      GoRoute(
         name: RouteNames.dashboard,
-        path: "/",
+        path: "/dashboard",
         builder: ((context, state) => Dashboard()),
         //use child/sub routes
         // routes: [
