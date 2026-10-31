@@ -25,6 +25,16 @@ class Dashboard extends StatelessWidget {
               },
               child: Text('Go To Profile'),
             ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                context.goNamed(
+                  RouteNames.message,
+                  queryParameters: {'name': 'Sabdo'},
+                );
+              },
+              child: Text('Go To Message'),
+            ),
           ],
         ),
       ),

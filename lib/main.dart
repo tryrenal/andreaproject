@@ -1,4 +1,5 @@
 import 'package:andreaproject/dashboard.dart';
+import 'package:andreaproject/message.dart';
 import 'package:andreaproject/profile.dart';
 import 'package:andreaproject/route_names.dart';
 import 'package:flutter/material.dart';
@@ -39,6 +40,13 @@ class MyApp extends StatelessWidget {
         path: "/profile/:name",
         builder: ((context, state) =>
             Profile(title: state.pathParameters["name"]!)),
+      ),
+
+      GoRoute(
+        name: RouteNames.message,
+        path: '/message',
+        builder: (context, state) =>
+            Message(name: state.uri.queryParameters['name'] ?? ""),
       ),
     ],
   );
