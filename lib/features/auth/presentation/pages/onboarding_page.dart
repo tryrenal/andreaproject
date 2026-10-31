@@ -1,11 +1,12 @@
 import 'package:andreaproject/core/theme/app_pallete.dart';
 import 'package:andreaproject/features/auth/presentation/models/onboarding_ui_model.dart';
 import 'package:andreaproject/features/auth/presentation/widgets/onboarding_caraousel.dart';
+import 'package:andreaproject/features/app_routers.dart';
 import 'package:andreaproject/features/home/presentation/home_page.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class OnboardingPage extends StatefulWidget {
-  static route() => MaterialPageRoute(builder: (context) => OnboardingPage());
   const OnboardingPage({super.key});
 
   @override
@@ -80,11 +81,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                             backgroundColor: AppPallete.whiteColor,
                           ),
                           onPressed: () {
-                            Navigator.pushAndRemoveUntil(
-                              context,
-                              HomePage.route(),
-                              (route) => false,
-                            );
+                            context.go(AppRouters.feed);
                           },
                           child: Text(
                             'Get Started',

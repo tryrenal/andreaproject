@@ -1,5 +1,5 @@
 import 'package:andreaproject/core/theme/app_theme.dart';
-import 'package:andreaproject/features/auth/presentation/pages/onboarding_page.dart';
+import 'package:andreaproject/features/router.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -11,11 +11,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.darkTheme,
-      home: OnboardingPage(),
+      routerConfig: router,
     );
   }
 }
