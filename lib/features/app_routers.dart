@@ -5,4 +5,6 @@ class AppRouters {
   static String message = '/message';
   static String cart = '/cart';
   static String profile = '/profile';
+
+  static String detail_item = '/detail-item';
 }

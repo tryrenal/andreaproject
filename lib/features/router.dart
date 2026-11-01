@@ -1,3 +1,4 @@
+import 'package:andreaproject/core/models/product_model.dart';
 import 'package:andreaproject/features/app_routers.dart';
 import 'package:andreaproject/features/auth/presentation/pages/onboarding_page.dart';
 import 'package:andreaproject/features/home/presentation/cart/cart_page.dart';
@@ -5,6 +6,7 @@ import 'package:andreaproject/features/home/presentation/feed/feed_page.dart';
 import 'package:andreaproject/features/home/presentation/home_page.dart';
 import 'package:andreaproject/features/home/presentation/message/message_page.dart';
 import 'package:andreaproject/features/home/presentation/profile/profile_page.dart';
+import 'package:andreaproject/features/item/presentation/detail_item_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -21,6 +23,14 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: AppRouters.onBoarding,
       builder: (context, state) => const OnboardingPage(),
+    ),
+
+    GoRoute(
+      path: AppRouters.detail_item,
+      builder: (context, state) {
+        final product = state.extra as ProductModel;
+        return DetailItemPage(product: product);
+      },
     ),
 
     StatefulShellRoute.indexedStack(
