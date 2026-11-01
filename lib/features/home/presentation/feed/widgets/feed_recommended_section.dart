@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:andreaproject/core/models/product_model.dart';
 import 'package:andreaproject/core/theme/app_pallete.dart';
 import 'package:andreaproject/features/app_routers.dart';
@@ -14,7 +15,11 @@ class FeedRecommendedSection extends StatelessWidget {
       children: [
         const Text(
           'Recommended for you',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+            color: Colors.white,
+          ),
         ),
         const SizedBox(height: 10),
         SizedBox(
@@ -49,21 +54,61 @@ class FeedRecommendedSection extends StatelessWidget {
   }
 }
 
-class _ProductCard extends StatelessWidget {
+class _ProductCard extends StatefulWidget {
   final ProductModel productModel;
 
   const _ProductCard({required this.productModel});
 
   @override
+  State<_ProductCard> createState() => _ProductCardState();
+}
+
+class _ProductCardState extends State<_ProductCard>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _shakeController;
+  bool _isNavigating = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _shakeController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    );
+  }
+
+  @override
+  void dispose() {
+    _shakeController.dispose();
+    super.dispose();
+  }
+
+  void _handleTap() async {
+    if (_isNavigating) return;
+    setState(() => _isNavigating = true);
+
+    await _shakeController.forward();
+
+    _shakeController.reset();
+
+    if (mounted) {
+      context.push(AppRouters.detail_item, extra: widget.productModel);
+    }
+
+    if (mounted) {
+      setState(() => _isNavigating = false);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        context.push(AppRouters.detail_item, extra: productModel);
-      },
+      onTap: _handleTap,
       child: Container(
         width: 180,
         decoration: BoxDecoration(
-          color: productModel.backgroundColor,
+          color: widget.productModel.backgroundColor,
           borderRadius: BorderRadius.circular(30),
         ),
         child: ClipRRect(
@@ -74,19 +119,43 @@ class _ProductCard extends StatelessWidget {
                 bottom: 10,
                 left: 0,
                 right: 0,
-                child: Image.asset(
-                  productModel.imagePath,
-                  height: 200,
-                  fit: BoxFit.contain,
+                child: AnimatedBuilder(
+                  animation: _shakeController,
+                  builder: (context, child) {
+                    final decay = math
+                        .pow(1.0 - _shakeController.value, 0.5)
+                        .toDouble();
+
+                    final angle = _shakeController.value * math.pi * 12;
+
+                    final xOffset = math.sin(angle) * 18.0 * decay;
+                    final yOffset = math.cos(angle * 0.8) * 12.0 * decay;
+
+                    final rotation = math.sin(angle * 1.1) * 0.15 * decay;
+
+                    return Transform.translate(
+                      offset: Offset(xOffset, yOffset),
+                      child: Transform.rotate(angle: rotation, child: child),
+                    );
+                  },
+                  child: Hero(
+                    tag: widget.productModel.imagePath,
+                    child: Image.asset(
+                      widget.productModel.imagePath,
+                      height: 200,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
                 ),
               ),
+
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      productModel.title,
+                      widget.productModel.title,
                       style: const TextStyle(
                         color: AppPallete.backgroundColor,
                         fontWeight: FontWeight.w900,
@@ -95,7 +164,6 @@ class _ProductCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    // Rating Badge
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 10,
@@ -115,7 +183,7 @@ class _ProductCard extends StatelessWidget {
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            productModel.rating,
+                            widget.productModel.rating,
                             style: const TextStyle(
                               color: AppPallete.blackColor,
                               fontSize: 12,
@@ -128,6 +196,7 @@ class _ProductCard extends StatelessWidget {
                   ],
                 ),
               ),
+
               Positioned(
                 bottom: 12,
                 left: 12,
@@ -143,7 +212,7 @@ class _ProductCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        productModel.price,
+                        widget.productModel.price,
                         style: const TextStyle(
                           color: AppPallete.blackColor,
                           fontWeight: FontWeight.bold,

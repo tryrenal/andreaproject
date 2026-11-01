@@ -36,19 +36,21 @@ class DetailItemPage extends StatelessWidget {
                     textAlign: TextAlign.start,
                   ),
                 ),
-
                 Positioned(
                   bottom: 0,
-                  child: Image.asset(
-                    height: 400,
-                    product.imagePath,
-                    fit: BoxFit.cover,
+
+                  child: Hero(
+                    tag: product.imagePath,
+                    child: Image.asset(
+                      product.imagePath,
+                      height: 400,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
               ],
             ),
           ),
-
           Positioned(
             top: MediaQuery.of(context).padding.top + 10,
             left: 20,
@@ -68,7 +70,6 @@ class DetailItemPage extends StatelessWidget {
               ),
             ),
           ),
-
           Positioned(
             top: 320,
             left: 0,
@@ -137,7 +138,6 @@ class DetailItemPage extends StatelessWidget {
                             ],
                           ),
                           const SizedBox(height: 10),
-
                           Text(
                             product.title.replaceAll('\n', ' '),
                             style: const TextStyle(
@@ -147,7 +147,6 @@ class DetailItemPage extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 20),
-
                           Row(
                             children: [
                               Expanded(
@@ -176,7 +175,6 @@ class DetailItemPage extends StatelessWidget {
                             ],
                           ),
                           const SizedBox(height: 24),
-
                           Row(
                             children: [
                               _buildSizeButton(
@@ -199,7 +197,6 @@ class DetailItemPage extends StatelessWidget {
                             ],
                           ),
                           const SizedBox(height: 20),
-
                           const Text(
                             "Smooth espresso balanced with steamed milk and light layer of foam",
                             style: TextStyle(
@@ -212,7 +209,6 @@ class DetailItemPage extends StatelessWidget {
                       ),
                     ),
                   ),
-
                   Container(
                     padding: EdgeInsets.fromLTRB(
                       24,
