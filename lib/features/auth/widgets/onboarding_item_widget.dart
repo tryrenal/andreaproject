@@ -31,7 +31,7 @@ class ItemOnboardingWidget extends StatelessWidget {
                 child: Row(
                   children: [
                     Container(
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         shape: BoxShape.circle,
                         color: AppColor.black,
                       ),
@@ -40,13 +40,13 @@ class ItemOnboardingWidget extends StatelessWidget {
                         child: Icon(item.icon, color: AppColor.white, size: 24),
                       ),
                     ),
-                    SizedBox(width: 16),
+                    const SizedBox(width: 16),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           item.title,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             color: AppColor.black,
                             fontSize: 18,
@@ -54,7 +54,7 @@ class ItemOnboardingWidget extends StatelessWidget {
                         ),
                         Text(
                           item.description,
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: AppColor.black,
                             fontWeight: FontWeight.normal,
                             fontSize: 12,

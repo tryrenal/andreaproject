@@ -3,8 +3,35 @@ import 'package:andreaproject/features/auth/presentation/models/onboarding_item_
 import 'package:andreaproject/features/auth/widgets/onboarding_item_widget.dart';
 import 'package:flutter/material.dart';
 
-class OnboardingPage extends StatelessWidget {
+class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});
+
+  @override
+  State<OnboardingPage> createState() => _OnboardingPageState();
+}
+
+class _OnboardingPageState extends State<OnboardingPage>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  static const int _dropMs = 1500;
+  static const int _staggerMs = 500;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2400),
+    )..forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,35 +99,72 @@ class OnboardingPage extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(height: 40),
+              const SizedBox(height: 40),
+
               Flexible(
                 child: ListView.builder(
                   shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
                   itemCount: onboardingItems.length,
                   itemBuilder: (context, index) {
                     final item = onboardingItems[index];
                     final isOdd = index % 2 != 0;
-                    return ItemOnboardingWidget(item: item, isOdd: isOdd);
+
+                    final int revealOrder = onboardingItems.length - 1 - index;
+
+                    final double start =
+                        (revealOrder * _staggerMs) /
+                        _controller.duration!.inMilliseconds;
+                    final double end =
+                        start +
+                        (_dropMs / _controller.duration!.inMilliseconds);
+
+                    final dropAnimation = CurvedAnimation(
+                      parent: _controller,
+                      curve: Interval(
+                        start.clamp(0.0, 1.0),
+                        end.clamp(0.0, 1.0),
+                        curve: Curves.easeOutBack,
+                      ),
+                    );
+
+                    return SlideTransition(
+                      position: Tween<Offset>(
+                        begin: const Offset(0, -1.5),
+                        end: Offset.zero,
+                      ).animate(dropAnimation),
+                      child: FadeTransition(
+                        opacity: dropAnimation,
+                        child: ItemOnboardingWidget(item: item, isOdd: isOdd),
+                      ),
+                    );
                   },
                 ),
               ),
-              SizedBox(height: 30),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.paid_outlined, size: 40),
-                  SizedBox(width: 10),
-                  Text(
-                    'start your\njourney'.toUpperCase(),
-                    textAlign: TextAlign.start,
-                    style: TextStyle(
-                      color: AppColor.white,
-                      fontWeight: FontWeight.bold,
+
+              const SizedBox(height: 30),
+              FadeTransition(
+                opacity: CurvedAnimation(
+                  parent: _controller,
+                  curve: Interval(0.80, 1.0, curve: Curves.easeIn),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.paid_outlined, size: 40),
+                    const SizedBox(width: 10),
+                    Text(
+                      'start your\njourney'.toUpperCase(),
+                      textAlign: TextAlign.start,
+                      style: const TextStyle(
+                        color: AppColor.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  SizedBox(width: 10),
-                  Icon(Icons.arrow_right_alt_outlined, size: 40),
-                ],
+                    const SizedBox(width: 10),
+                    const Icon(Icons.arrow_right_alt_outlined, size: 40),
+                  ],
+                ),
               ),
             ],
           ),
