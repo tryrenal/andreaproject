@@ -1,9 +1,8 @@
-import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
 
 class AppColor {
   static const blackBackground = Color(0xff171717);
-  static const lightBackground = Color(0xffEDEDED);
+  static const lightBackground = Color.fromARGB(255, 211, 210, 210);
 
   static const white = Color(0xffFCFCFC);
   static const black = Color.fromARGB(255, 0, 0, 0);

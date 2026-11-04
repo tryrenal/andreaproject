@@ -1,7 +1,9 @@
+import 'package:andreaproject/app_routers.dart';
 import 'package:andreaproject/core/themes/app_color.dart';
 import 'package:andreaproject/features/auth/presentation/models/onboarding_item_model.dart';
 import 'package:andreaproject/features/auth/widgets/onboarding_item_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});
@@ -148,22 +150,27 @@ class _OnboardingPageState extends State<OnboardingPage>
                   parent: _controller,
                   curve: Interval(0.80, 1.0, curve: Curves.easeIn),
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.paid_outlined, size: 40),
-                    const SizedBox(width: 10),
-                    Text(
-                      'start your\njourney'.toUpperCase(),
-                      textAlign: TextAlign.start,
-                      style: const TextStyle(
-                        color: AppColor.white,
-                        fontWeight: FontWeight.bold,
+                child: GestureDetector(
+                  onTap: () {
+                    context.go(AppRouters.home);
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.paid_outlined, size: 40),
+                      const SizedBox(width: 10),
+                      Text(
+                        'start your\njourney'.toUpperCase(),
+                        textAlign: TextAlign.start,
+                        style: const TextStyle(
+                          color: AppColor.white,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 10),
-                    const Icon(Icons.arrow_right_alt_outlined, size: 40),
-                  ],
+                      const SizedBox(width: 10),
+                      const Icon(Icons.arrow_right_alt_outlined, size: 40),
+                    ],
+                  ),
                 ),
               ),
             ],
