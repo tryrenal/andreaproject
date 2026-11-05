@@ -14,6 +14,7 @@ class AppColor {
   static const blue = Color(0xff7BC1FC);
   static const orange = Color(0xffFF9445);
   static const pink = Color(0xffF850A6);
+  static const red = Color.fromARGB(255, 241, 3, 3);
 
   static const transparant = Colors.transparent;
 }

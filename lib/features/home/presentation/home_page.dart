@@ -1,7 +1,9 @@
+import 'package:andreaproject/app_routers.dart';
 import 'package:andreaproject/features/home/presentation/widgets/animated_counter.dart';
 import 'package:andreaproject/features/home/presentation/widgets/custom_stiker.dart';
 import 'package:flutter/material.dart';
 import 'package:andreaproject/core/themes/app_color.dart';
+import 'package:go_router/go_router.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -242,54 +244,59 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       curve: const Interval(0.4, 1.0, curve: Curves.easeOutBack),
     );
 
-    return Stack(
-      clipBehavior: Clip.none,
-      alignment: Alignment.center,
-      children: [
-        SlideTransition(
-          position: Tween<Offset>(
-            begin: Offset(0, -1.5),
-            end: Offset.zero,
-          ).animate(backAnimation),
-          child: FadeTransition(
-            opacity: backAnimation,
-            child: Transform.rotate(
-              angle: -0.10,
-              child: Transform.translate(
-                offset: const Offset(10, -10),
-                child: Image.asset('assets/images/visa_bg.png'),
+    return GestureDetector(
+      onTap: () {
+        context.push(AppRouters.spending);
+      },
+      child: Stack(
+        clipBehavior: Clip.none,
+        alignment: Alignment.center,
+        children: [
+          SlideTransition(
+            position: Tween<Offset>(
+              begin: Offset(0, -1.5),
+              end: Offset.zero,
+            ).animate(backAnimation),
+            child: FadeTransition(
+              opacity: backAnimation,
+              child: Transform.rotate(
+                angle: -0.10,
+                child: Transform.translate(
+                  offset: const Offset(10, -10),
+                  child: Image.asset('assets/images/visa_bg.png'),
+                ),
               ),
             ),
           ),
-        ),
 
-        SlideTransition(
-          position: Tween<Offset>(
-            begin: Offset(0, -1.5),
-            end: Offset.zero,
-          ).animate(middleAnimation),
-          child: FadeTransition(
-            opacity: middleAnimation,
-            child: Transform.rotate(
-              angle: 0.20,
-              child: Transform.translate(
-                offset: const Offset(-10, 10),
-                child: Image.asset('assets/images/visa_bg.png'),
+          SlideTransition(
+            position: Tween<Offset>(
+              begin: Offset(0, -1.5),
+              end: Offset.zero,
+            ).animate(middleAnimation),
+            child: FadeTransition(
+              opacity: middleAnimation,
+              child: Transform.rotate(
+                angle: 0.20,
+                child: Transform.translate(
+                  offset: const Offset(-10, 10),
+                  child: Image.asset('assets/images/visa_bg.png'),
+                ),
               ),
             ),
           ),
-        ),
-        SlideTransition(
-          position: Tween<Offset>(
-            begin: Offset(0, -1.5),
-            end: Offset.zero,
-          ).animate(frontAnimation),
-          child: FadeTransition(
-            opacity: frontAnimation,
-            child: Image.asset('assets/images/visa.png'),
+          SlideTransition(
+            position: Tween<Offset>(
+              begin: Offset(0, -1.5),
+              end: Offset.zero,
+            ).animate(frontAnimation),
+            child: FadeTransition(
+              opacity: frontAnimation,
+              child: Image.asset('assets/images/visa.png'),
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
