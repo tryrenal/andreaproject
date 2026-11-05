@@ -1,8 +1,57 @@
+import 'package:andreaproject/features/home/presentation/widgets/animated_counter.dart';
+import 'package:andreaproject/features/home/presentation/widgets/custom_stiker.dart';
 import 'package:flutter/material.dart';
 import 'package:andreaproject/core/themes/app_color.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final AnimationController _stickerController;
+  late final AnimationController _bannerTextController;
+  late final AnimationController _bannerFlipController;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    )..forward();
+
+    _stickerController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 700),
+    );
+
+    _bannerTextController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 900),
+    )..forward();
+
+    _bannerFlipController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 1400),
+    )..forward();
+
+    Future.delayed(Duration(milliseconds: 3000), () {
+      if (mounted) _stickerController.forward();
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _stickerController.dispose();
+    _bannerFlipController.dispose();
+    _bannerTextController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,117 +70,230 @@ class HomePage extends StatelessWidget {
               const SizedBox(height: 40),
               _menu(),
               const SizedBox(height: 20),
-              Container(
-                decoration: BoxDecoration(
-                  color: AppColor.purple,
-                  borderRadius: BorderRadius.circular(20),
-                  shape: BoxShape.rectangle,
-                ),
-                child: Row(
+              _banner(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _banner() {
+    final textFade = CurvedAnimation(
+      parent: _bannerTextController,
+      curve: Curves.easeOut,
+    );
+
+    final flip = TweenSequence<double>([
+      TweenSequenceItem(
+        tween: Tween(
+          begin: 1.0,
+          end: -1.0,
+        ).chain(CurveTween(curve: Curves.easeInOut)),
+        weight: 40,
+      ),
+
+      TweenSequenceItem(tween: ConstantTween(-1.0), weight: 20),
+
+      TweenSequenceItem(
+        tween: Tween(
+          begin: -1.0,
+          end: 1.0,
+        ).chain(CurveTween(curve: Curves.easeInOut)),
+        weight: 40,
+      ),
+    ]).animate(_bannerFlipController);
+
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColor.purple,
+        borderRadius: BorderRadius.circular(20),
+        shape: BoxShape.rectangle,
+      ),
+      child: Row(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Expanded(
+              flex: 1,
+              child: FadeTransition(
+                opacity: textFade,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Expanded(
-                        flex: 1,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'EARN\nMORE'.toUpperCase(),
-                              style: TextStyle(
-                                fontWeight: FontWeight.w900,
-                                color: AppColor.black,
-                                fontSize: 38,
-                                letterSpacing: -1.5,
-                                height: 1.0,
-                              ),
-                            ),
-                            Text(
-                              'Get up to 3% APY\non your balance',
-                              style: TextStyle(
-                                fontSize: 16,
-                                letterSpacing: -1.5,
-                                height: 1.0,
-                                color: AppColor.black,
-                              ),
-                            ),
-                          ],
-                        ),
+                    Text(
+                      'EARN\nMORE'.toUpperCase(),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w900,
+                        color: AppColor.black,
+                        fontSize: 38,
+                        letterSpacing: -1.5,
+                        height: 1.0,
                       ),
                     ),
-                    Expanded(
-                      flex: 1,
-                      child: Image.asset('assets/images/cat_banner.png'),
+                    Text(
+                      'Get up to 3% APY\non your balance',
+                      style: TextStyle(
+                        fontSize: 16,
+                        letterSpacing: -1.5,
+                        height: 1.0,
+                        color: AppColor.black,
+                      ),
                     ),
                   ],
                 ),
               ),
-            ],
+            ),
           ),
-        ),
+          Expanded(
+            flex: 1,
+            child: AnimatedBuilder(
+              animation: flip,
+              builder: (context, child) {
+                return Transform.scale(scaleX: flip.value, child: child);
+              },
+              child: Image.asset('assets/images/cat_banner.png'),
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Row _menu() {
+  Widget _menu() {
+    final receiveItem = CurvedAnimation(
+      parent: _controller,
+      curve: Interval(0.0, 0.55, curve: Curves.easeOutCubic),
+    );
+    final sendItem = CurvedAnimation(
+      parent: _controller,
+      curve: Interval(0.2, 0.75, curve: Curves.easeOutCubic),
+    );
+    final swapItem = CurvedAnimation(
+      parent: _controller,
+      curve: Interval(0.4, 0.95, curve: Curves.easeOutCubic),
+    );
+
     return Row(
       children: [
-        _menuItem(Icons.arrow_downward_outlined, 'Receive'),
+        _menuItem(
+          Icons.arrow_downward_outlined,
+          'Receive',
+          receiveItem,
+          Offset(0, -1),
+        ),
         const SizedBox(width: 5),
-        _menuItem(Icons.arrow_upward_outlined, 'Send'),
+        _menuItem(Icons.arrow_upward_outlined, 'Send', sendItem, Offset(0, 1)),
         const SizedBox(width: 5),
-        _menuItem(Icons.swap_horiz_outlined, 'Swap'),
+        _menuItem(Icons.swap_horiz_outlined, 'Swap', swapItem, Offset(1, 0)),
       ],
     );
   }
 
-  Expanded _menuItem(IconData icon, String label) {
+  Widget _menuItem(
+    IconData icon,
+    String label,
+    Animation<double> animation,
+    Offset begin,
+  ) {
     return Expanded(
-      child: Container(
-        decoration: BoxDecoration(
-          color: AppColor.white,
-          borderRadius: BorderRadius.circular(15),
-          shape: BoxShape.rectangle,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Icon(icon, color: AppColor.black),
-              Text(label, style: TextStyle(color: AppColor.black)),
-            ],
+      child: SlideTransition(
+        position: Tween<Offset>(
+          begin: begin,
+          end: Offset.zero,
+        ).animate(animation),
+        child: FadeTransition(
+          opacity: animation,
+          child: Container(
+            decoration: BoxDecoration(
+              color: AppColor.white,
+              borderRadius: BorderRadius.circular(15),
+              shape: BoxShape.rectangle,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Icon(icon, color: AppColor.black),
+                  Text(label, style: TextStyle(color: AppColor.black)),
+                ],
+              ),
+            ),
           ),
         ),
       ),
     );
   }
 
-  Stack _card() {
+  Widget _card() {
+    final backAnimation = CurvedAnimation(
+      parent: _controller,
+      curve: const Interval(0.0, 0.6, curve: Curves.easeOutBack),
+    );
+
+    final middleAnimation = CurvedAnimation(
+      parent: _controller,
+      curve: const Interval(0.2, 0.8, curve: Curves.easeOutBack),
+    );
+
+    final frontAnimation = CurvedAnimation(
+      parent: _controller,
+      curve: const Interval(0.4, 1.0, curve: Curves.easeOutBack),
+    );
+
     return Stack(
       clipBehavior: Clip.none,
       alignment: Alignment.center,
       children: [
-        Transform.rotate(
-          angle: -0.10,
-          child: Transform.translate(
-            offset: const Offset(10, -10),
-            child: Image.asset('assets/images/visa_bg.png'),
+        SlideTransition(
+          position: Tween<Offset>(
+            begin: Offset(0, -1.5),
+            end: Offset.zero,
+          ).animate(backAnimation),
+          child: FadeTransition(
+            opacity: backAnimation,
+            child: Transform.rotate(
+              angle: -0.10,
+              child: Transform.translate(
+                offset: const Offset(10, -10),
+                child: Image.asset('assets/images/visa_bg.png'),
+              ),
+            ),
           ),
         ),
-        Transform.rotate(
-          angle: 0.20,
-          child: Transform.translate(
-            offset: const Offset(-10, 10),
-            child: Image.asset('assets/images/visa_bg.png'),
+
+        SlideTransition(
+          position: Tween<Offset>(
+            begin: Offset(0, -1.5),
+            end: Offset.zero,
+          ).animate(middleAnimation),
+          child: FadeTransition(
+            opacity: middleAnimation,
+            child: Transform.rotate(
+              angle: 0.20,
+              child: Transform.translate(
+                offset: const Offset(-10, 10),
+                child: Image.asset('assets/images/visa_bg.png'),
+              ),
+            ),
           ),
         ),
-        Image.asset('assets/images/visa.png'),
+        SlideTransition(
+          position: Tween<Offset>(
+            begin: Offset(0, -1.5),
+            end: Offset.zero,
+          ).animate(frontAnimation),
+          child: FadeTransition(
+            opacity: frontAnimation,
+            child: Image.asset('assets/images/visa.png'),
+          ),
+        ),
       ],
     );
   }
 
-  Row _balance() {
+  Widget _balance() {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -161,44 +323,73 @@ class HomePage extends StatelessWidget {
               ),
               const SizedBox(height: 4),
 
-              RichText(
-                text: const TextSpan(
-                  children: [
-                    TextSpan(
-                      text: '\$12,420',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w900,
-                        color: AppColor.black,
-                        fontSize: 38,
-                        letterSpacing: -1.5,
-                        height: 1.0,
-                      ),
-                    ),
-                    TextSpan(
-                      text: '.20',
-                      style: TextStyle(
-                        color: AppColor.black,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
+              AnimatedCounter(
+                value: 12420.20,
+                duration: Duration(seconds: 3),
+                prefix: '\$',
+                wholeStyle: TextStyle(
+                  fontWeight: FontWeight.w900,
+                  color: AppColor.black,
+                  fontSize: 38,
+                  letterSpacing: -1.5,
+                  height: 1.0,
+                ),
+                decimalStyle: TextStyle(
+                  color: AppColor.black,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
+
               const SizedBox(height: 4),
-              Text(
-                'Total earned rewards: \$100',
-                style: TextStyle(
-                  color: AppColor.black.withValues(alpha: 0.7),
-                  fontSize: 13,
-                ),
+              Row(
+                children: [
+                  Text(
+                    'Total earned rewards: ',
+                    style: TextStyle(
+                      color: AppColor.black.withValues(alpha: 0.7),
+                      fontSize: 13,
+                    ),
+                  ),
+                  AnimatedCounter(
+                    value: 100,
+                    duration: Duration(seconds: 3),
+                    wholeStyle: TextStyle(
+                      color: AppColor.black.withValues(alpha: 0.7),
+                      fontSize: 13,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
         ),
 
-        const CustomSticker(),
+        _stickerAnimated(),
       ],
+    );
+  }
+
+  Widget _stickerAnimated() {
+    final curved = CurvedAnimation(
+      parent: _stickerController,
+      curve: Curves.elasticOut,
+    );
+    return AnimatedBuilder(
+      animation: curved,
+      builder: (context, child) {
+        final t = curved.value;
+        final opacity = (_stickerController.value * 2).clamp(0.0, 1.0);
+
+        return Opacity(
+          opacity: opacity,
+          child: Transform.scale(
+            scale: 1.0 + (1 - t) * 0.8,
+            child: Transform.rotate(angle: (1 - t) * -0.35, child: child),
+          ),
+        );
+      },
+      child: CustomSticker(),
     );
   }
 
@@ -266,93 +457,4 @@ class HomePage extends StatelessWidget {
       ],
     );
   }
-}
-
-class CustomSticker extends StatelessWidget {
-  const CustomSticker({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Transform.rotate(
-      angle: 0.1,
-      child: ClipPath(
-        clipper: RoughStickerClipper(),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
-          color: AppColor.black,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const Text(
-                'SMALL\nSTEPS\nBIG\nFREEDOM',
-                style: TextStyle(
-                  color: AppColor.white,
-                  fontWeight: FontWeight.w900,
-                  fontSize: 16,
-                  height: 1.0,
-                  letterSpacing: 0.5,
-                ),
-              ),
-              const SizedBox(width: 8),
-
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Transform.rotate(
-                    angle: 0.2,
-                    child: const Icon(
-                      Icons.flash_on,
-                      color: AppColor.greenLight,
-                      size: 24,
-                    ),
-                  ),
-                  Transform.translate(
-                    offset: const Offset(6, -8),
-                    child: Transform.rotate(
-                      angle: 0.2,
-                      child: const Icon(
-                        Icons.flash_on,
-                        color: AppColor.greenLight,
-                        size: 24,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class RoughStickerClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    final path = Path();
-    final w = size.width;
-    final h = size.height;
-
-    path.moveTo(4, 2);
-
-    path.cubicTo(w * 0.2, -2, w * 0.4, 5, w * 0.7, 1);
-    path.cubicTo(w * 0.85, -1, w * 0.9, 4, w - 2, 3);
-
-    path.cubicTo(w + 2, h * 0.2, w - 4, h * 0.5, w + 1, h * 0.8);
-    path.cubicTo(w + 3, h * 0.9, w - 2, h - 4, w - 3, h - 1);
-
-    path.cubicTo(w * 0.8, h + 2, w * 0.6, h - 4, w * 0.3, h + 1);
-    path.cubicTo(w * 0.1, h + 3, 2, h - 2, 1, h - 4);
-
-    path.cubicTo(-2, h * 0.7, 3, h * 0.4, -1, h * 0.1);
-    path.cubicTo(-2, 0, 2, 4, 4, 2);
-
-    path.close();
-    return path;
-  }
-
-  @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
