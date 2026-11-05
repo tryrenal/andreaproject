@@ -294,20 +294,24 @@ class DonutChartPainter extends CustomPainter {
       ..strokeCap = StrokeCap.butt;
 
     double startAngle = -math.pi / 2;
-    const gapAngle = 0.05;
+    final totalSweep = 2 * math.pi;
 
-    for (var category in categories) {
+    for (int i = 0; i < categories.length; i++) {
+      final category = categories[i];
       paint.color = category.color;
 
-      final sweepAngle = (category.amount / total) * (2 * math.pi);
+      double sweepAngle = (category.amount / total) * totalSweep;
 
-      canvas.drawArc(
-        rect,
-        startAngle + (gapAngle / 2),
-        sweepAngle - gapAngle,
-        false,
-        paint,
-      );
+      if (i == categories.length - 1) {
+        final endAngle = -math.pi / 2;
+
+        sweepAngle = endAngle - startAngle;
+        if (sweepAngle <= 0) {
+          sweepAngle += totalSweep;
+        }
+      }
+
+      canvas.drawArc(rect, startAngle, sweepAngle, false, paint);
 
       startAngle += sweepAngle;
     }
