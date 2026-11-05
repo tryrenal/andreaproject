@@ -3,7 +3,9 @@ import 'dart:math' as math;
 import 'package:andreaproject/core/themes/app_color.dart';
 import 'package:andreaproject/features/home/presentation/models/spending_category.dart';
 import 'package:andreaproject/features/home/presentation/models/spending_data.dart';
+import 'package:andreaproject/features/home/presentation/widgets/animated_counter.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class SpendingPage extends StatefulWidget {
   const SpendingPage({super.key});
@@ -12,7 +14,11 @@ class SpendingPage extends StatefulWidget {
   State<SpendingPage> createState() => _SpendingPageState();
 }
 
-class _SpendingPageState extends State<SpendingPage> {
+class _SpendingPageState extends State<SpendingPage>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _chartController;
+  late Animation<double> _chartAnimation;
+
   final SpendingData _data = SpendingData(
     totalAmount: 7683.21,
     percentageChange: "12%",
@@ -52,6 +58,27 @@ class _SpendingPageState extends State<SpendingPage> {
   );
 
   @override
+  void initState() {
+    super.initState();
+    _chartController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 2500),
+    );
+
+    _chartAnimation = CurvedAnimation(
+      parent: _chartController,
+      curve: Curves.easeInOutSine,
+    );
+    _chartController.forward();
+  }
+
+  @override
+  void dispose() {
+    _chartController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _buildAppBar(),
@@ -62,7 +89,11 @@ class _SpendingPageState extends State<SpendingPage> {
             children: [
               _buildChart(),
               const SizedBox(height: 40),
-              ..._data.categories.map((category) => _buildListItem(category)),
+              ..._data.categories.asMap().entries.map((entry) {
+                final index = entry.key;
+                final category = entry.value;
+                return _buildListItem(category, index);
+              }),
               const SizedBox(height: 20),
               TextButton(
                 onPressed: () {},
@@ -87,12 +118,18 @@ class _SpendingPageState extends State<SpendingPage> {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          CustomPaint(
-            size: const Size(300, 300),
-            painter: DonutChartPainter(
-              categories: _data.categories,
-              total: _data.totalAmount,
-            ),
+          AnimatedBuilder(
+            animation: _chartAnimation,
+            builder: (context, child) {
+              return CustomPaint(
+                size: const Size(300, 300),
+                painter: DonutChartPainter(
+                  categories: _data.categories,
+                  total: _data.totalAmount,
+                  animationValue: _chartAnimation.value,
+                ),
+              );
+            },
           ),
 
           Column(
@@ -106,9 +143,16 @@ class _SpendingPageState extends State<SpendingPage> {
                 ),
               ),
               const SizedBox(height: 4),
-              Text(
-                _formatCurrency(_data.totalAmount),
-                style: const TextStyle(
+              AnimatedCounter(
+                value: _data.totalAmount,
+                duration: const Duration(milliseconds: 2500),
+                wholeStyle: const TextStyle(
+                  color: AppColor.white,
+                  fontSize: 32,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: -0.5,
+                ),
+                decimalStyle: const TextStyle(
                   color: AppColor.white,
                   fontSize: 32,
                   fontWeight: FontWeight.w900,
@@ -158,8 +202,17 @@ class _SpendingPageState extends State<SpendingPage> {
     );
   }
 
-  Widget _buildListItem(SpendingCategory category) {
+  Widget _buildListItem(SpendingCategory category, int index) {
     final percentage = _data.getPercentage(category);
+
+    final totalItems = _data.categories.length;
+    final segmentStart = index / totalItems;
+    final segmentEnd = (index + 1) / totalItems;
+
+    final itemAnimation = CurvedAnimation(
+      parent: _chartController,
+      curve: Interval(segmentStart, segmentEnd, curve: Curves.linear),
+    );
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 16, right: 16, left: 16),
@@ -176,31 +229,63 @@ class _SpendingPageState extends State<SpendingPage> {
           ),
           const SizedBox(width: 16),
           Expanded(
-            child: Text(
-              category.name,
-              style: const TextStyle(
-                color: AppColor.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
+            child: SlideTransition(
+              position: Tween<Offset>(
+                begin: const Offset(-0.5, 0),
+                end: Offset.zero,
+              ).animate(itemAnimation),
+              child: FadeTransition(
+                opacity: itemAnimation,
+                child: Text(
+                  category.name,
+                  style: const TextStyle(
+                    color: AppColor.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
               ),
             ),
           ),
-          Text(
-            _formatCurrency(category.amount),
-            style: const TextStyle(
-              color: AppColor.white,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
+
+          AnimatedBuilder(
+            animation: itemAnimation,
+            builder: (context, child) {
+              final animatedAmount = category.amount * itemAnimation.value;
+              final animatedPercentage = percentage * itemAnimation.value;
+
+              return Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  AnimatedCounter(
+                    value: animatedAmount,
+                    duration: Duration.zero,
+                    prefix: '\$',
+                    wholeStyle: const TextStyle(
+                      color: AppColor.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    decimalStyle: const TextStyle(
+                      color: AppColor.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+
+                  Text(
+                    '${animatedPercentage.toStringAsFixed(0)}%',
+                    style: TextStyle(
+                      color: AppColor.greyLight.withValues(alpha: 0.5),
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
-          const SizedBox(width: 16),
-          Text(
-            '${percentage.toStringAsFixed(0)}%',
-            style: TextStyle(
-              color: AppColor.greyLight.withValues(alpha: 0.5),
-              fontSize: 14,
-            ),
-          ),
+
           const SizedBox(width: 8),
           Icon(
             Icons.chevron_right,
@@ -228,7 +313,7 @@ class _SpendingPageState extends State<SpendingPage> {
       leading: Padding(
         padding: const EdgeInsets.only(left: 16, top: 16),
         child: InkWell(
-          onTap: () => Navigator.pop(context),
+          onTap: () => context.pop(),
           child: Container(
             height: 50,
             width: 50,
@@ -275,8 +360,13 @@ class _SpendingPageState extends State<SpendingPage> {
 class DonutChartPainter extends CustomPainter {
   final List<SpendingCategory> categories;
   final double total;
+  final double animationValue;
 
-  DonutChartPainter({required this.categories, required this.total});
+  DonutChartPainter({
+    required this.categories,
+    required this.total,
+    required this.animationValue,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -296,6 +386,8 @@ class DonutChartPainter extends CustomPainter {
     double startAngle = -math.pi / 2;
     final totalSweep = 2 * math.pi;
 
+    final segmentDuration = 1.0 / categories.length;
+
     for (int i = 0; i < categories.length; i++) {
       final category = categories[i];
       paint.color = category.color;
@@ -304,14 +396,27 @@ class DonutChartPainter extends CustomPainter {
 
       if (i == categories.length - 1) {
         final endAngle = -math.pi / 2;
-
         sweepAngle = endAngle - startAngle;
         if (sweepAngle <= 0) {
           sweepAngle += totalSweep;
         }
       }
 
-      canvas.drawArc(rect, startAngle, sweepAngle, false, paint);
+      final segmentStart = i * segmentDuration;
+      final segmentEnd = (i + 1) * segmentDuration;
+
+      double localProgress = 0.0;
+      if (animationValue >= segmentEnd) {
+        localProgress = 1.0;
+      } else if (animationValue > segmentStart) {
+        localProgress = (animationValue - segmentStart) / segmentDuration;
+      }
+
+      final drawableSweep = sweepAngle * localProgress;
+
+      if (drawableSweep > 0) {
+        canvas.drawArc(rect, startAngle, drawableSweep, false, paint);
+      }
 
       startAngle += sweepAngle;
     }
@@ -319,6 +424,8 @@ class DonutChartPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant DonutChartPainter oldDelegate) {
-    return oldDelegate.total != total || oldDelegate.categories != categories;
+    return oldDelegate.total != total ||
+        oldDelegate.categories != categories ||
+        oldDelegate.animationValue != animationValue;
   }
 }
