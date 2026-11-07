@@ -297,16 +297,6 @@ class _SpendingPageState extends State<SpendingPage>
     );
   }
 
-  String _formatCurrency(double amount) {
-    final str = amount.toStringAsFixed(2);
-    final parts = str.split('.');
-    final wholePart = parts[0].replaceAllMapped(
-      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-      (Match m) => '${m[1]},',
-    );
-    return '\$$wholePart.${parts[1]}';
-  }
-
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
       centerTitle: true,
